@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Local Markdown Viewer",
+  "version": "1.0.0",
+  "description": "Render local .md files as rich Markdown preview",
+  "content_scripts": [
+    {
+      "matches": ["file:///*"],
+      "include_globs": [
+        "*.md",
+        "*.md?*",
+        "*.md#*",
+        "*.markdown",
+        "*.markdown?*",
+        "*.markdown#*",
+        "*.mkd",
+        "*.mkd?*",
+        "*.mkd#*"
+      ],
+      "js": [
+        "vendor/marked.min.js",
+        "vendor/highlight.min.js",
+        "content.js"
+      ],
+      "css": [
+        "vendor/highlight-github.css",
+        "styles/github-markdown.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["styles/markdown.css"],
+      "matches": ["file:///*"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
