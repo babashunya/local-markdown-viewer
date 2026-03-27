@@ -7,11 +7,16 @@
 
   const rawMarkdown = preElement.textContent;
 
+  mermaid.initialize({ startOnLoad: false, theme: "default" });
+
   marked.use({
     gfm: true,
     breaks: true,
     renderer: {
       code({ text, lang }) {
+        if (lang === "mermaid") {
+          return `<div class="mermaid">${text}</div>`;
+        }
         const language = lang && hljs.getLanguage(lang) ? lang : null;
         const highlighted = language
           ? hljs.highlight(text, { language }).value
@@ -66,6 +71,7 @@
 
     window.scrollTo(0, scrollY);
     setupTocHighlight();
+    mermaid.run({ nodes: document.querySelectorAll(".mermaid") });
   }
 
   function setupTocHighlight() {
