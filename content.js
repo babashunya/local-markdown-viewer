@@ -57,9 +57,45 @@
     document.head.appendChild(link);
   }
 
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  // YAML front matter を縦向き（キー | 値）のテーブルとして表示する
+  function renderFrontMatter(markdown) {
+    const match = markdown.match(/^\uFEFF?---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/);
+    if (!match) return { frontMatterHtml: "", body: markdown };
+
+    const entries = [];
+    match[1].split(/\r?\n/).forEach((line) => {
+      const kv = line.match(/^([^\s#:][^:]*):\s*(.*)$/);
+      if (kv) {
+        entries.push([kv[1].trim(), kv[2].trim()]);
+      } else if (entries.length && line.trim() && !line.trim().startsWith("#")) {
+        // 複数行の値（リスト等）は直前のキーに連結
+        const last = entries[entries.length - 1];
+        last[1] = (last[1] ? last[1] + " " : "") + line.trim().replace(/^-\s+/, "");
+      }
+    });
+    if (!entries.length) return { frontMatterHtml: "", body: markdown };
+
+    const unquote = (v) => v.replace(/^(["'])(.*)\1$/, "$2");
+    const rows = entries
+      .map(([k, v]) => `<tr><th>${escapeHtml(k)}</th><td>${escapeHtml(unquote(v))}</td></tr>`)
+      .join("");
+    return {
+      frontMatterHtml: `<table class="front-matter"><tbody>${rows}</tbody></table>`,
+      body: markdown.slice(match[0].length),
+    };
+  }
+
   function render(markdown) {
     const scrollY = window.scrollY;
-    const html = marked.parse(markdown);
+    const { frontMatterHtml, body } = renderFrontMatter(markdown);
+    const html = frontMatterHtml + marked.parse(body);
     const { tocHtml, contentHtml } = buildToc(html);
 
     document.title = extractTitle(markdown);
