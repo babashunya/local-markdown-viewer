@@ -21,10 +21,12 @@
         "vendor/marked.min.js",
         "vendor/highlight.min.js",
         "vendor/mermaid.min.js",
+        "vendor/katex/katex.min.js",
         "content.js"
       ],
       "css": [
         "vendor/highlight-github.css",
+        "vendor/katex/katex.min.css",
         "styles/github-markdown.css"
       ],
       "run_at": "document_end"
@@ -32,7 +34,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["styles/markdown.css"],
+      "resources": ["styles/markdown.css", "vendor/katex/fonts/*"],
       "matches": ["file:///*"]
     }
   ],
